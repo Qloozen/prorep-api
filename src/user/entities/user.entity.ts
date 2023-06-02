@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { ExerciseGroup } from "src/exercise-groups/entities/exercise-group.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -31,4 +32,7 @@ export class User {
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     date_created: Date;
+
+    @OneToMany(() => ExerciseGroup, exerciseGroup => exerciseGroup.user)
+    exercise_groups: ExerciseGroup[];
 }

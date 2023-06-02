@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsDate, IsDateString, IsEmail, IsIn, IsNotEmpty, IsNumber, IsString, Max, MaxDate, Min } from "class-validator";
+import { IsDate, IsEmail, IsIn, IsNotEmpty, IsNumber, IsString, Max, MaxDate, Min } from "class-validator";
 
 export class CreateUserDto {
     @IsString()
