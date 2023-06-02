@@ -1,39 +1,46 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsDateString, IsEmail, IsIn, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDate, IsDateString, IsEmail, IsIn, IsNotEmpty, IsNumber, IsString, Max, MaxDate, Min } from "class-validator";
 
 export class CreateUserDto {
     @IsString()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({example: "John"})
     first_name: string;
 
     @IsString()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({example: "Doe"})
     last_name: string;
 
     @IsIn(["male" , "female" , "other"])
     @IsNotEmpty()
-    @ApiProperty()
-    gender: string;
+    @ApiProperty({example: "male"})
+    gender: "male" | "female" | "other";
 
-    @IsDateString()
+    @Type(() => Date)
+    @MaxDate(new Date())
+    @IsDate()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({example: "1990-01-01T00:00:00Z"})
     birthday: Date;
 
+    @Min(30)
+    @Max(150)
     @IsNumber()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({example: 30.0})
     current_weight_kg: number;
 
+    @Min(100)
+    @Max(250)
     @IsNumber()
     @IsNotEmpty()
-    @ApiProperty()
+    @ApiProperty({example: 180.0})
     height_cm: number; 
 
     @IsEmail()
-    @ApiProperty()
+    @ApiProperty({example: "example@email.com"})
     email: string;
     
     @IsString()
