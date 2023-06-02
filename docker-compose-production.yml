@@ -1,0 +1,50 @@
+services:
+  prorep-api:
+    container_name: prorep-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    image: prorep-api:1.0
+    environment:
+      MYSQL_HOST: prorep-db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    pull_policy: build
+    depends_on:
+      prorep-db: 
+        condition: service_healthy
+
+  prorep-db:
+    container_name: prorep-db
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: prorep-db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - prorep-db-volume:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '--password=${MYSQL_ROOT_PASSWORD}'
+        ]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  prorep-db-volume:
+
+networks:
+  default:
+    name: nginxproxymanager_default
+    external: true
