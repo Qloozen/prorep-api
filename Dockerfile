@@ -18,5 +18,5 @@ RUN npm ci
 COPY . .
 RUN npm run build
 EXPOSE 3000
-CMD npx typeorm -d dist/data/database.config.js migration:generate && npm run migration:run && npm run start:prod
+CMD npx typeorm migration:generate -d dist/data/database.config.js && npm run migration:run && npm run start:prod
 
