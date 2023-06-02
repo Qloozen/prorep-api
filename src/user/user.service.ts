@@ -32,7 +32,7 @@ export class UserService {
     await this.handleUserExists(id);
     const result: DeleteResult = await this.userRepository.delete(id)
     if (result.affected != 1) throw new HttpException('User not deleted', HttpStatus.NOT_MODIFIED);
-    return id;
+    return {id};
   }
 
   private async handleUserExists(id: number) {
