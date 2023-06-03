@@ -5,6 +5,7 @@ import { UpdateExerciseGroupDto } from './dto/update-exercise-group.dto';
 import { AddExerciseToGroupDto } from './dto/add-exercise-to-group.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FirebaseUser } from 'src/shared/decorators/firebase-user/firebase-user.decorator';
+import { RemoveExerciseFromGroupDto } from './dto/remove-exercise-from-group.dto';
 
 @ApiBearerAuth()
 @ApiTags("Exercise Groups")
@@ -22,6 +23,12 @@ export class ExerciseGroupsController {
   addExerciseToGroup(@Body() addExerciseToGroupDto: AddExerciseToGroupDto, @FirebaseUser() { firebaseUID }) { 
     if (addExerciseToGroupDto.userId != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
     return this.exerciseGroupsService.addExerciseToGroup(addExerciseToGroupDto);
+  }
+
+  @Post('remove-exercise')
+  removeExerciseFromGroup(@Body() removeExerciseFromGroupDto: RemoveExerciseFromGroupDto, @FirebaseUser() { firebaseUID }) { 
+    if (removeExerciseFromGroupDto.userId != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+    return this.exerciseGroupsService.removeExerciseFromGroup(removeExerciseFromGroupDto);
   }
 
   @Get()

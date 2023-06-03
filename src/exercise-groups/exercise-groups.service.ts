@@ -7,6 +7,7 @@ import { DeleteResult, IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Exercise } from 'src/exercises/entities/exercise.entity';
 import { AddExerciseToGroupDto } from './dto/add-exercise-to-group.dto';
+import { RemoveExerciseFromGroupDto } from './dto/remove-exercise-from-group.dto';
 
 @Injectable()
 export class ExerciseGroupsService {
@@ -41,8 +42,23 @@ export class ExerciseGroupsService {
     });
     if (!exercise) throw new HttpException('Exercise not found', HttpStatus.NOT_FOUND);
     if (exercise.user.id != addExerciseToGroupDto.userId) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
-    
+
     exerciseGroup.exercises.push(exercise);
+    return this.exerciseGroupRepository.save(exerciseGroup);
+  }
+
+  async removeExerciseFromGroup(removeExerciseFromGroupDto: RemoveExerciseFromGroupDto) { 
+    const { groupId, exerciseId } = removeExerciseFromGroupDto;
+
+    const exerciseGroup = await this.exerciseGroupRepository.findOne({
+      where: { id: groupId },
+      relations: ['user', 'exercises']
+    });
+    if (!exerciseGroup) throw new HttpException('ExerciseGroup not found', HttpStatus.NOT_FOUND);
+    if (!exerciseGroup.exercises.find(e => e.id == exerciseId)) throw new HttpException('Exercise not found in group', HttpStatus.NOT_FOUND);
+    if (exerciseGroup.user.id != removeExerciseFromGroupDto.userId) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+
+    exerciseGroup.exercises = exerciseGroup.exercises.filter(e => e.id != exerciseId);
     return this.exerciseGroupRepository.save(exerciseGroup);
   }
 
