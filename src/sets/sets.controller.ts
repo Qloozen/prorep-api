@@ -1,0 +1,37 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { SetsService } from './sets.service';
+import { CreateSetDto } from './dto/create-set.dto';
+import { UpdateSetDto } from './dto/update-set.dto';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags("Sets")
+@Controller('sets')
+export class SetsController {
+  constructor(private readonly setsService: SetsService) {}
+
+  @Post()
+  create(@Body() createSetDto: CreateSetDto) {
+    return this.setsService.create(createSetDto);
+  }
+
+  @Get()
+  findAllByUserId(@Query('userId') userId: number) {
+    if (!userId) throw new HttpException('Missing the userId', HttpStatus.BAD_REQUEST);
+    return this.setsService.findAllByUserId(userId);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.setsService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateSetDto: UpdateSetDto) {
+    return this.setsService.update(+id, updateSetDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.setsService.remove(+id);
+  }
+}

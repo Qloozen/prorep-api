@@ -1,6 +1,7 @@
 import { ExerciseGroup } from "src/exercise-groups/entities/exercise-group.entity";
+import { Set } from "src/sets/entities/set.entity";
 import { User } from "src/user/entities/user.entity";
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, OneToMany } from "typeorm";
 
 @Entity()
 export class Exercise {
@@ -18,4 +19,7 @@ export class Exercise {
 
     @ManyToMany(() => ExerciseGroup, exerciseGroup => exerciseGroup.exercises)
     exercise_groups: ExerciseGroup[];
+
+    @OneToMany(() => Set, set => set.exercise)
+    sets: Set[];
 }

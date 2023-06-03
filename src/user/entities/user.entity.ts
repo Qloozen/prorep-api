@@ -1,5 +1,6 @@
 import { ExerciseGroup } from "src/exercise-groups/entities/exercise-group.entity";
 import { Exercise } from "src/exercises/entities/exercise.entity";
+import { Set } from "src/sets/entities/set.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -39,4 +40,7 @@ export class User {
 
     @OneToMany(() => Exercise, exercise => exercise.user)
     exercises: Exercise[];
+
+    @OneToMany(() => Set, set => set.user)
+    sets: Set[];
 }

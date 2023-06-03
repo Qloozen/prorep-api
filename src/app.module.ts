@@ -6,13 +6,15 @@ import { ResponseInterceptor } from './shared/response/response.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ExerciseGroupsModule } from './exercise-groups/exercise-groups.module';
 import { ExercisesModule } from './exercises/exercises.module';
+import { SetsModule } from './sets/sets.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(databaseConfig),
     UserModule,
     ExerciseGroupsModule,
-    ExercisesModule
+    ExercisesModule,
+    SetsModule
   ],
   controllers: [],
   providers: [
