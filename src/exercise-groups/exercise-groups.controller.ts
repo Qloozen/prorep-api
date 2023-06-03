@@ -3,8 +3,9 @@ import { ExerciseGroupsService } from './exercise-groups.service';
 import { CreateExerciseGroupDto } from './dto/create-exercise-group.dto';
 import { UpdateExerciseGroupDto } from './dto/update-exercise-group.dto';
 import { AddExerciseToGroupDto } from './dto/add-exercise-to-group.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @ApiTags("Exercise Groups")
 @Controller('exercise-groups')
 export class ExerciseGroupsController {
