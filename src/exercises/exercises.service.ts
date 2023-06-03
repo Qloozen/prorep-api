@@ -23,34 +23,41 @@ export class ExercisesService {
     return this.exerciseRepository.save(exercise);
   }
 
-  findAllByUserId(userId: number) {
+  findAllByUserId(userId: string) {
     return this.exerciseRepository.find({
       where: { user: { id: userId } }
     })
   }
 
-  findOne(id: number) {
-    const exercise = this.exerciseRepository.findOne({ where: { id } });
+  async findOne(id: number, firebaseUID: string) {
+    const exercise = await this.exerciseRepository.findOne({
+      where: { id },
+      relations: ['user']
+    });
     if (!exercise) throw new HttpException('Exercise not found', HttpStatus.NOT_FOUND);
+    if (exercise.user.id != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
     return exercise;
   }
 
   async update(id: number, updateExerciseDto: UpdateExerciseDto) {
-    await this.handleExerciseExists(id);
+    const exists = await this.exerciseRepository.exist({ where: { id }});
+    if (!exists) throw new HttpException('Exercise not found', HttpStatus.NOT_FOUND);
+
     const result: UpdateResult = await this.exerciseRepository.update(id, updateExerciseDto);
     if (result.affected != 1) throw new HttpException('Exercise not updated', HttpStatus.NOT_MODIFIED);
     return this.exerciseRepository.findOne({ where: { id } });
   }
 
-  async remove(id: number) {
-    await this.handleExerciseExists(id);
+  async remove(id: number, firebaseUID: string) {
+    const exercise = await this.exerciseRepository.findOne({
+      where: { id },
+      relations: ['user']
+    });
+    if (!exercise) throw new HttpException('Exercise not found', HttpStatus.NOT_FOUND);
+    if (exercise.user.id != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+
     const result: DeleteResult = await this.exerciseRepository.delete(id);
     if (result.affected != 1) throw new HttpException('Exercise not deleted', HttpStatus.NOT_MODIFIED);
     return { id };
-  }
-
-  private async handleExerciseExists(id: number) {
-    const exists = await this.exerciseRepository.exist({ where: { id }});
-    if (!exists) throw new HttpException('Exercise not found', HttpStatus.NOT_FOUND);
   }
 }

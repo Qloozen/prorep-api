@@ -15,27 +15,27 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async findOne(id: number) {
+  async findOne(id: string) {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     return user
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     await this.handleUserExists(id);
     const result: UpdateResult = await this.userRepository.update(id, updateUserDto)
     if (result.affected != 1) throw new HttpException('User not updated', HttpStatus.NOT_MODIFIED);
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.handleUserExists(id);
     const result: DeleteResult = await this.userRepository.delete(id)
     if (result.affected != 1) throw new HttpException('User not deleted', HttpStatus.NOT_MODIFIED);
     return {id};
   }
 
-  private async handleUserExists(id: number) {
+  private async handleUserExists(id: string) {
     const exists = await this.userRepository.exist({ where: { id }});
     if (!exists) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }

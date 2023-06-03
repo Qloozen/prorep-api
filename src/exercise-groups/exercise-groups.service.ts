@@ -28,34 +28,49 @@ export class ExerciseGroupsService {
 
   async addExerciseToGroup(addExerciseToGroupDto: AddExerciseToGroupDto) {
     const { groupId, exerciseId } = addExerciseToGroupDto;
-    const exerciseGroup = await this.exerciseGroupRepository.findOne({ where: { id: groupId } });
+    const exerciseGroup = await this.exerciseGroupRepository.findOne({
+      where: { id: groupId },
+      relations: ['user', 'exercises']
+    });
     if (!exerciseGroup) throw new HttpException('ExerciseGroup not found', HttpStatus.NOT_FOUND);
-    const exercise = await this.exerciseRepository.findOne({ where: { id: exerciseId } });
+    if (exerciseGroup.user.id != addExerciseToGroupDto.userId) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+
+    const exercise = await this.exerciseRepository.findOne({
+      where: { id: exerciseId },
+      relations: ['user']
+    });
     if (!exercise) throw new HttpException('Exercise not found', HttpStatus.NOT_FOUND);
+    if (exercise.user.id != addExerciseToGroupDto.userId) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+    
     exerciseGroup.exercises.push(exercise);
     return this.exerciseGroupRepository.save(exerciseGroup);
   }
 
-  findAllByUserId(userId: number) {
+  findAllByUserId(userId: string) {
     return this.exerciseGroupRepository.find({
       where: { user: { id: userId } }
     });
   }
 
-  findPlannedExerciseGroupsByUserId(userId: number) { 
+  findPlannedExerciseGroupsByUserId(userId: string) { 
     return this.exerciseGroupRepository.find({
       where: { user: { id: userId }, planned_on_day: Not(IsNull()) }
     });
   }
 
-  async findOne(id: number) {
-    const exerciseGroup = await this.exerciseGroupRepository.findOne({ where: { id } });
+  async findOne(id: number, firebaseUID: string) {
+    const exerciseGroup = await this.exerciseGroupRepository.findOne({
+      where: { id },
+      relations: ['user']
+    });
     if (!exerciseGroup) throw new HttpException('ExerciseGroup not found', HttpStatus.NOT_FOUND);
+    if (exerciseGroup.user.id != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
     return exerciseGroup;
   }
 
   async update(id: number, updateExerciseGroupDto: UpdateExerciseGroupDto) {
-    await this.handleExerciseGroupExists(id);
+    const exists = await this.exerciseGroupRepository.exist({ where: { id }});
+    if (!exists) throw new HttpException('ExerciseGroup not found', HttpStatus.NOT_FOUND);
 
     if (updateExerciseGroupDto.planned_on_day) { 
       const existingGroup = await this.exerciseGroupRepository.findOne({
@@ -75,15 +90,13 @@ export class ExerciseGroupsService {
     return this.exerciseGroupRepository.findOne({ where: { id } });
   }
 
-  async remove(id: number) {
-    await this.handleExerciseGroupExists(id);
+  async remove(id: number, firebaseUID: string) {
+    const exerciseGroup = await this.exerciseGroupRepository.findOne({ where: { id }, relations: ['user'] });
+    if (!id) throw new HttpException('ExerciseGroup not found', HttpStatus.NOT_FOUND);
+    if (exerciseGroup.user.id != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+
     const result: DeleteResult = await this.exerciseGroupRepository.delete(id)
     if (result.affected != 1) throw new HttpException('ExerciseGroup not deleted', HttpStatus.NOT_MODIFIED);
     return {id};
-  }
-
-  private async handleExerciseGroupExists(id: number) {
-    const exists = await this.exerciseGroupRepository.exist({ where: { id }});
-    if (!exists) throw new HttpException('ExerciseGroup not found', HttpStatus.NOT_FOUND);
   }
 }

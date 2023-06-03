@@ -1,11 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, Max, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, Max, Min } from "class-validator";
 
 export class CreateSetDto {
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    @ApiProperty({example: 1})
-    userId: number;
+    @ApiProperty({example: "abcdefg"})
+    userId: string;
 
     @IsNumber()
     @IsNotEmpty()

@@ -33,34 +33,42 @@ export class SetsService {
     return this.setRepository.save(set);
   }
 
-  findAllByUserId(userId: number) {
+  findAllByUserId(userId: string) {
     return this.setRepository.find({
       where: { user: { id: userId } }
     })
   }
 
-  async findOne(id: number) {
-    const set = await this.setRepository.findOne({ where: { id } });
+  async findOne(id: number, firebaseUID: string) {
+    const set = await this.setRepository.findOne({
+      where: { id },
+      relations: ['user']
+    });
+
     if (!set) throw new HttpException('Set not found', HttpStatus.NOT_FOUND);
+    if (set.user.id != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
     return set;
   }
 
   async update(id: number, updateSetDto: UpdateSetDto) {
-    await this.handleSetExist(id);
+    const exists = await this.setRepository.exist({ where: { id }});
+    if (!exists) throw new HttpException('Set not found', HttpStatus.NOT_FOUND);
+
     const result: UpdateResult = await this.setRepository.update(id, updateSetDto);
     if (result.affected != 1) throw new HttpException('Set not updated', HttpStatus.NOT_MODIFIED);
     return this.setRepository.findOne({ where: { id } });
   }
 
-  async remove(id: number) {
-    await this.handleSetExist(id);
+  async remove(id: number, firebaseUID: string) {
+    const set = await this.setRepository.findOne({
+      where: { id },
+      relations: ['user']
+    });
+    if (!set) throw new HttpException('Set not found', HttpStatus.NOT_FOUND);
+    if (set.user.id != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+    
     const result: DeleteResult = await this.setRepository.delete(id);
     if (result.affected != 1) throw new HttpException('Set not deleted', HttpStatus.NOT_MODIFIED);
     return { id };
-  }
-
-  private async handleSetExist(id: number) {
-    const exists = await this.setRepository.exist({ where: { id }});
-    if (!exists) throw new HttpException('Set not found', HttpStatus.NOT_FOUND);
   }
 }

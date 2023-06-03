@@ -37,14 +37,5 @@ export class CreateUserDto {
     @IsNumber()
     @IsNotEmpty()
     @ApiProperty({example: 180.0})
-    height_cm: number; 
-
-    @IsEmail()
-    @ApiProperty({example: "example@email.com"})
-    email: string;
-    
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty()
-    provider_UID: string;
+    height_cm: number;
 }

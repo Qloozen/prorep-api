@@ -1,12 +1,12 @@
 import { ExerciseGroup } from "src/exercise-groups/entities/exercise-group.entity";
 import { Exercise } from "src/exercises/entities/exercise.entity";
 import { Set } from "src/sets/entities/set.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryColumn()
+    id: string;
 
     @Column()
     first_name: string;
@@ -28,9 +28,6 @@ export class User {
 
     @Column()
     email: string;
-
-    @Column()
-    provider_UID: string;
 
     @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
     date_created: Date;

@@ -2,10 +2,10 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
 
 export class CreateExerciseGroupDto {
-    @IsNumber()
+    @IsString()
     @IsNotEmpty()
-    @ApiProperty({ example: 1 })
-    userId: number;
+    @ApiProperty({example: "abcdefg"})
+    userId: string;
     
     @IsString()
     @IsNotEmpty()
