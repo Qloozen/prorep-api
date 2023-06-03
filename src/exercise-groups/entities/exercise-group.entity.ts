@@ -1,5 +1,6 @@
+import { Exercise } from "src/exercises/entities/exercise.entity";
 import { User } from "src/user/entities/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class ExerciseGroup {
@@ -17,4 +18,18 @@ export class ExerciseGroup {
 
     @ManyToOne(() => User, user => user.exercise_groups)
     user: User;
+
+    @ManyToMany(() => Exercise, exercise => exercise.exercise_groups, { eager: true })
+    @JoinTable({
+        name: "ExerciseGroups_Exercises",
+        joinColumn: {
+            name: "exercise_group_id",
+            referencedColumnName: "id"
+        },
+        inverseJoinColumn: {
+            name: "exercise_id",
+            referencedColumnName: "id"
+        }
+    })
+    exercises: Exercise[];
 }

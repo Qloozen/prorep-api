@@ -5,12 +5,14 @@ import { UserModule } from './user/user.module';
 import { ResponseInterceptor } from './shared/response/response.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ExerciseGroupsModule } from './exercise-groups/exercise-groups.module';
+import { ExercisesModule } from './exercises/exercises.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(databaseConfig),
     UserModule,
-    ExerciseGroupsModule
+    ExerciseGroupsModule,
+    ExercisesModule
   ],
   controllers: [],
   providers: [

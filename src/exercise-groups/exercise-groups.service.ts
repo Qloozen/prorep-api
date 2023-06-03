@@ -5,12 +5,15 @@ import { ExerciseGroup } from './entities/exercise-group.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, IsNull, Not, Repository, UpdateResult } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { Exercise } from 'src/exercises/entities/exercise.entity';
+import { AddExerciseToGroupDto } from './dto/add-exercise-to-group.dto';
 
 @Injectable()
 export class ExerciseGroupsService {
 
   constructor(
     @InjectRepository(ExerciseGroup) private exerciseGroupRepository: Repository<ExerciseGroup>,
+    @InjectRepository(Exercise) private exerciseRepository: Repository<Exercise>,
     @InjectRepository(User) private userRepository: Repository<User>
   ) { }
 
@@ -20,6 +23,16 @@ export class ExerciseGroupsService {
 
     const exerciseGroup = this.exerciseGroupRepository.create(createExerciseGroupDto);
     exerciseGroup.user = user;
+    return this.exerciseGroupRepository.save(exerciseGroup);
+  }
+
+  async addExerciseToGroup(addExerciseToGroupDto: AddExerciseToGroupDto) {
+    const { groupId, exerciseId } = addExerciseToGroupDto;
+    const exerciseGroup = await this.exerciseGroupRepository.findOne({ where: { id: groupId } });
+    if (!exerciseGroup) throw new HttpException('ExerciseGroup not found', HttpStatus.NOT_FOUND);
+    const exercise = await this.exerciseRepository.findOne({ where: { id: exerciseId } });
+    if (!exercise) throw new HttpException('Exercise not found', HttpStatus.NOT_FOUND);
+    exerciseGroup.exercises.push(exercise);
     return this.exerciseGroupRepository.save(exerciseGroup);
   }
 

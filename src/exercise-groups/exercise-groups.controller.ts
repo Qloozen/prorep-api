@@ -2,7 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException
 import { ExerciseGroupsService } from './exercise-groups.service';
 import { CreateExerciseGroupDto } from './dto/create-exercise-group.dto';
 import { UpdateExerciseGroupDto } from './dto/update-exercise-group.dto';
+import { AddExerciseToGroupDto } from './dto/add-exercise-to-group.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Exercise Groups")
 @Controller('exercise-groups')
 export class ExerciseGroupsController {
   constructor(private readonly exerciseGroupsService: ExerciseGroupsService) {}
@@ -10,6 +13,11 @@ export class ExerciseGroupsController {
   @Post()
   create(@Body() createExerciseGroupDto: CreateExerciseGroupDto) {
     return this.exerciseGroupsService.create(createExerciseGroupDto);
+  }
+
+  @Post('add-exercise')
+  addExerciseToGroup(@Body() addExerciseToGroupDto: AddExerciseToGroupDto) { 
+    return this.exerciseGroupsService.addExerciseToGroup(addExerciseToGroupDto);
   }
 
   @Get()
