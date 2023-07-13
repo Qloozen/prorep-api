@@ -14,9 +14,6 @@ services:
       FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY}
       FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL}
     pull_policy: build
-    depends_on:
-      prorep-db:
-        condition: service_healthy
 
 networks:
   default:
