@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException, HttpStatus, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  HttpException,
+  HttpStatus,
+  Req,
+} from '@nestjs/common';
 import { ExercisesService } from './exercises.service';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
@@ -6,21 +18,28 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FirebaseUser } from 'src/shared/decorators/firebase-user/firebase-user.decorator';
 
 @ApiBearerAuth()
-@ApiTags("Exercises")
+@ApiTags('Exercises')
 @Controller('exercises')
 export class ExercisesController {
-  constructor(private readonly exercisesService: ExercisesService) { }
+  constructor(private readonly exercisesService: ExercisesService) {}
 
   @Post()
-  create(@Body() createExerciseDto: CreateExerciseDto, @FirebaseUser() { firebaseUID }) {
-    if (createExerciseDto.userId != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
-    return this.exercisesService.create(createExerciseDto);
+  create(
+    @Body() createExerciseDto: CreateExerciseDto,
+    @FirebaseUser() { firebaseUID },
+  ) {
+    return this.exercisesService.create(createExerciseDto, firebaseUID);
   }
 
   @Get()
-  findAllByUserId(@Query("userId") userId: string, @FirebaseUser() { firebaseUID }) {
-    if (!userId) throw new HttpException('Missing the userId', HttpStatus.BAD_REQUEST);
-    if (userId != firebaseUID) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+  findAllByUserId(
+    @Query('userId') userId: string,
+    @FirebaseUser() { firebaseUID },
+  ) {
+    if (!userId)
+      throw new HttpException('Missing the userId', HttpStatus.BAD_REQUEST);
+    if (userId != firebaseUID)
+      throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
     return this.exercisesService.findAllByUserId(userId);
   }
 
@@ -30,8 +49,10 @@ export class ExercisesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateExerciseDto: UpdateExerciseDto) {
-    if (updateExerciseDto.userId) throw new HttpException('Unauthorized action', HttpStatus.UNAUTHORIZED);
+  update(
+    @Param('id') id: number,
+    @Body() updateExerciseDto: UpdateExerciseDto,
+  ) {
     return this.exercisesService.update(+id, updateExerciseDto);
   }
 
